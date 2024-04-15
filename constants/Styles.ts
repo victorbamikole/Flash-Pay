@@ -6,6 +6,8 @@ export const defaultStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
     padding: 16,
+   
+    margin: 10
   },
   header: {
     fontSize: 40,
