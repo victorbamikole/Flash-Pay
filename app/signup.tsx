@@ -1,4 +1,6 @@
 import {
+  Alert,
+  Button,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -13,18 +15,67 @@ import { defaultStyles } from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import { CountryPicker } from "react-native-country-codes-picker";
 import { Link, useRouter } from "expo-router";
+import { useSignUp } from "@clerk/clerk-expo";
 
 const Page = () => {
+  const { isLoaded, signUp, setActive } = useSignUp();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState("+1");
   const [countryFlag, setCountryFlag] = useState("");
   const keyboardVerticalOffset = Platform.OS === "ios" ? 80 : 0;
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [pendingVerification, setPendingVerification] = React.useState(false);
+  const [code, setCode] = React.useState("");
   const router = useRouter();
 
-  function onSignup(event: any) {
-    throw new Error("Function not implemented.");
+  async function onSignup() {
+    if (!isLoaded) {
+      return;
+    }
+    const fullPhoneNumber = `${countryCode}${phoneNumber}`;
+    console.log("fullPhoneNumber", fullPhoneNumber);
+    try {
+      const response = await signUp.create({
+        emailAddress: "victorbamikole92@gmail.com",
+        password: 'Vickybavs4192$$',
+      });
+
+      // console.log("RESPONSE", response);
+
+      // send the email.
+      const response2 = await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+      console.log("RESPONSE2", response2);
+
+      // change the UI to our pending section.
+      setPendingVerification(true);
+    } catch (err: any) {
+      console.log("ERROR", err.errors[0]);
+      Alert.alert(err.errors[0].message);
+    }
   }
+
+  const onPressVerify = async () => {
+    if (!isLoaded) {
+      return;
+    }
+    // setLoading(true);
+
+    try {
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      await setActive({ session: completeSignUp.createdSessionId });
+    } catch (err: any) {
+      alert(err.errors[0].message);
+    } finally {
+      // setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -75,6 +126,45 @@ const Page = () => {
           />
         </View>
 
+        {!pendingVerification && (
+          <>
+            <TextInput
+              autoCapitalize="none"
+              placeholder="simon@galaxies.dev"
+              value={emailAddress}
+              onChangeText={setEmailAddress}
+              style={[styles.input]}
+            />
+            <View style={{ paddingVertical: 20 }}>
+              <TextInput
+                placeholder="password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                style={[styles.input]}
+              />
+            </View>
+          </>
+        )}
+
+        {pendingVerification && (
+          <>
+            <View>
+              <TextInput
+                value={code}
+                placeholder="Code..."
+                style={styles.input}
+                onChangeText={setCode}
+              />
+            </View>
+            <Button
+              onPress={onPressVerify}
+              title="Verify Email"
+              color={"#6c47ff"}
+            ></Button>
+          </>
+        )}
+
         <Link href={"/login"} replace asChild>
           <TouchableOpacity>
             <Text style={defaultStyles.textLink}>
@@ -120,5 +210,14 @@ const styles = StyleSheet.create({
   },
   disabled: {
     backgroundColor: Colors.primaryMuted,
+  },
+  inputField: {
+    marginVertical: 4,
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#6c47ff",
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: "#fff",
   },
 });

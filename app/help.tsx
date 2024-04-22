@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const help = () => {
+const Page = () => {
   return (
     <View>
       <Text>help</Text>
@@ -9,6 +9,6 @@ const help = () => {
   );
 };
 
-export default help;
+export default Page;
 
 const styles = StyleSheet.create({});
