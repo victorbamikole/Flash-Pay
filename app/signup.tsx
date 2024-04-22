@@ -1,5 +1,5 @@
 import {
-    KeyboardAvoidingView,
+  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -18,27 +18,13 @@ const Page = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState("+1");
+  const [countryFlag, setCountryFlag] = useState("");
   const keyboardVerticalOffset = Platform.OS === "ios" ? 80 : 0;
-   const router = useRouter();
- 
+  const router = useRouter();
 
-  const onSignup = async () => {
-    const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-
-    try {
-      await signUp!.create({
-        phoneNumber: fullPhoneNumber,
-      });
-      signUp!.preparePhoneNumberVerification();
-
-      router.push({
-        pathname: "/verify/[phone]",
-        params: { phone: fullPhoneNumber },
-      });
-    } catch (error) {
-      console.error("Error signing up:", error);
-    }
-  };
+  function onSignup(event: any) {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <KeyboardAvoidingView
@@ -61,11 +47,20 @@ const Page = () => {
             >
               {countryCode}
             </Text>
+            <Text
+              style={{
+                color: Colors.gray,
+                fontSize: 20,
+              }}
+            >
+              {countryFlag}
+            </Text>
           </TouchableOpacity>
           <CountryPicker
             show={show}
             pickerButtonOnPress={(item) => {
               setCountryCode(item.dial_code);
+              setCountryFlag(item.flag);
               setShow(false);
             }}
             lang={""}
@@ -94,7 +89,7 @@ const Page = () => {
           style={[
             defaultStyles.pillButton,
             phoneNumber !== "" ? styles.enabled : styles.disabled,
-            { marginBottom : 20 },
+            { marginBottom: 20 },
           ]}
           onPress={onSignup}
         >
@@ -118,6 +113,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     fontSize: 20,
     marginRight: 10,
+    flexDirection: "row",
   },
   enabled: {
     backgroundColor: Colors.primary,
