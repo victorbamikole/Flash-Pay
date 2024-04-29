@@ -17,13 +17,13 @@ import {
 const CELL_COUNT = 6;
 
 const Page = () => {
-  const { phone, signin } = useLocalSearchParams<{
-    phone: string;
+  const { email, signin } = useLocalSearchParams<{
+    email: string;
     signin: string;
   }>();
   const [code, setCode] = useState("");
   const { signIn } = useSignIn();
-  const { signUp, setActive } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
   const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value: code,
@@ -35,7 +35,7 @@ const Page = () => {
       if (signin === "true") {
         verifySignIn();
       } else {
-        verifyCode();
+        onPressVerify();
       }
     }
   }, [code]);
@@ -51,6 +51,25 @@ const Page = () => {
       if (isClerkAPIResponseError(err)) {
         Alert.alert("Error", err.errors[0].message);
       }
+    }
+  };
+
+  const onPressVerify = async () => {
+    if (!isLoaded) {
+      return;
+    }
+    // setLoading(true);
+
+    try {
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      await setActive({ session: completeSignUp.createdSessionId });
+    } catch (err: any) {
+      alert(err.errors[0].message);
+    } finally {
+      // setLoading(false);
     }
   };
 
@@ -72,7 +91,7 @@ const Page = () => {
     <View style={defaultStyles.container}>
       <Text style={defaultStyles.header}>6-digit code</Text>
       <Text style={defaultStyles.descriptionText}>
-        Code sent to {phone} unless you already have an account
+        Enter the 6 digit Code sent to {email}
       </Text>
 
       <CodeField
@@ -110,6 +129,17 @@ const Page = () => {
           </Text>
         </TouchableOpacity>
       </Link>
+
+      <TouchableOpacity
+        style={[
+          defaultStyles.pillButton,
+          code !== "" ? styles.enabled : styles.disabled,
+          { marginBottom: 20, marginTop: 20 },
+        ]}
+        onPress={onPressVerify}
+      >
+        <Text style={defaultStyles.buttonText}>Continue</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -144,5 +174,11 @@ const styles = StyleSheet.create({
     width: 10,
     backgroundColor: Colors.gray,
     alignSelf: "center",
+  },
+  enabled: {
+    backgroundColor: Colors.primary,
+  },
+  disabled: {
+    backgroundColor: Colors.primaryMuted,
   },
 });
