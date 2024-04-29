@@ -18,8 +18,10 @@ import { Link, useRouter } from "expo-router";
 import { useAuth, useSignUp } from "@clerk/clerk-expo";
 import { Formik } from "formik";
 import { emailValidate, registerFormValidation } from "./helper/validate";
+import CustomButton from "./components/CustomButton";
 
 const Page = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const { isLoaded, signUp, setActive } = useSignUp();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [show, setShow] = useState(false);
@@ -42,30 +44,30 @@ const Page = () => {
   };
 
   async function onSignup() {
+    setIsLoading(true);
     if (!isLoaded) {
+      setIsLoading(false);
       return;
     }
     const fullPhoneNumber = `${countryCode}${phoneNumber}`;
     try {
       const response = await signUp.create({
         emailAddress: emailAddress,
-        password: "Vickybavs4192$$",
+        password: password,
       });
 
       // send the email.
       const response2 = await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
+      setIsLoading(false);
       router.push({
         pathname: "/verify/[phone]",
         params: { phone: emailAddress },
       });
-      console.log("RESPONSE2", response2);
-
-      // change the UI to our pending section.
       // setPendingVerification(true);
     } catch (err: any) {
-      console.log("ERROR", err.errors[0]);
+      setIsLoading(false);
       Alert.alert(err.errors[0].message);
     }
   }
@@ -111,6 +113,7 @@ const Page = () => {
           values = await Object.assign(values);
           console.log("VALUES", values);
           setEmailAddress(values.email);
+          setPassword(values.password);
           onSignup();
         }}
       >
@@ -228,7 +231,7 @@ const Page = () => {
 
             <View style={{ flex: 1 }} />
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 defaultStyles.pillButton,
                 values.email !== "" ? styles.enabled : styles.disabled,
@@ -237,7 +240,13 @@ const Page = () => {
               onPress={() => handleSubmit()}
             >
               <Text style={defaultStyles.buttonText}>Sign up</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <CustomButton
+              isLoading={isLoading}
+              title={"Sign Up"}
+              onPress={() => handleSubmit()}
+            />
           </View>
         )}
       </Formik>

@@ -41,8 +41,8 @@ const Page = () => {
     console.log("fullPhoneNumber", fullPhoneNumber);
     try {
       const response = await signUp.create({
-        emailAddress: "victorbamikole92@gmail.com",
-        password: "Vickybavs4192$$",
+        emailAddress: emailAddress,
+        password: password,
       });
 
       // console.log("RESPONSE", response);

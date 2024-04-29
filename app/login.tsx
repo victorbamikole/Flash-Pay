@@ -196,7 +196,6 @@ const Page = () => {
                 values.userName !== "" ? styles.enabled : styles.disabled,
                 { marginBottom: 20, marginTop: 20 },
               ]}
-              onPress={onSignIn}
             >
               <Text style={defaultStyles.buttonText}>Continue</Text>
             </TouchableOpacity>
