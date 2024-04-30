@@ -29,7 +29,7 @@ const Layout = () => {
           tabBarIcon: ({ size, color }) => (
             <FontAwesome name="registered" size={size} color={color} />
           ),
-          header: () => <CustomHeader />,
+          // header: () => <CustomHeader />,
           headerTransparent: true,
         }}
       />

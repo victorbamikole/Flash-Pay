@@ -50,11 +50,12 @@ const InitialLayout = () => {
   });
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
-    const segments = useSegments();
+  const segments = useSegments();
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
+    console.log("NEWERROR", error);
   }, [error]);
 
   useEffect(() => {
@@ -66,24 +67,22 @@ const InitialLayout = () => {
   useEffect(() => {
     console.log("isSignedIn", isSignedIn);
 
-     const inAuthGroup = segments[0] === "(authenticated)";
+    const inAuthGroup = segments[0] === "(authenticated)";
 
-     if (isSignedIn && !inAuthGroup) {
-       router.replace("/(authenticated)/(tabs)/home");
-     } else if (!isSignedIn) {
-       router.replace("/");
-     }
+    if (isSignedIn && !inAuthGroup) {
+      router.replace("/(authenticated)/(tabs)/home");
+    } else if (!isSignedIn!) {
+      router.replace("/");
+    }
   }, [isSignedIn]);
 
-   if (!loaded || !isLoaded) {
-     return (
-       <View
-         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-       >
-         <ActivityIndicator size="large" color={Colors.primary} />
-       </View>
-     );
-   }
+  if (!loaded || !isLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <Stack>
@@ -244,7 +243,7 @@ const RootLayoutNav = () => {
       tokenCache={tokenCache}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <InitialLayout />
       </GestureHandlerRootView>
     </ClerkProvider>

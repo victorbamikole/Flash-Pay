@@ -91,12 +91,12 @@ const Page = () => {
     }
   };
 
-  const routerPush = () => {
-    router.push({
-      pathname: "/verify/[phone]",
-      params: { email: emailAddress },
-    });
-  };
+  // const routerPush = () => {
+  //   router.push({
+  //     pathname: "/verify/[phone]",
+  //     params: { email: emailAddress },
+  //   });
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -225,22 +225,7 @@ const Page = () => {
               </TouchableOpacity>
             </Link>
 
-            {/* <TouchableOpacity onPress={routerPush}>
-              <Text style={defaultStyles.textLink}>OTP</Text>
-            </TouchableOpacity> */}
-
             <View style={{ flex: 1 }} />
-
-            {/* <TouchableOpacity
-              style={[
-                defaultStyles.pillButton,
-                values.email !== "" ? styles.enabled : styles.disabled,
-                { marginBottom: 20 },
-              ]}
-              onPress={() => handleSubmit()}
-            >
-              <Text style={defaultStyles.buttonText}>Sign up</Text>
-            </TouchableOpacity> */}
 
             <CustomButton
               isLoading={isLoading}
