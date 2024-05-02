@@ -16,6 +16,7 @@ import { defaultStyles } from "@/constants/Styles";
 interface ReusableButtonProps extends TouchableOpacityProps {
   isLoading: boolean;
   title: string;
+  emailField: string;
   buttonStyle?: ViewStyle;
   titleStyle?: TextStyle;
 }
@@ -25,6 +26,7 @@ const CustomButton: React.FC<ReusableButtonProps> = ({
   title,
   buttonStyle,
   titleStyle,
+  emailField,
   ...props
 }) => {
   return (
@@ -32,6 +34,7 @@ const CustomButton: React.FC<ReusableButtonProps> = ({
       style={[
         defaultStyles.pillButton,
         isLoading ? styles.disabled : styles.enabled,
+        emailField !== "" ? styles.enabled : styles.disabled,
         { marginBottom: 20 },
       ]}
       disabled={isLoading}

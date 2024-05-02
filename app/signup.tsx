@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { defaultStyles } from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import { CountryPicker } from "react-native-country-codes-picker";
@@ -18,9 +18,12 @@ import { Link, useRouter } from "expo-router";
 import { useAuth, useSignUp } from "@clerk/clerk-expo";
 import { Formik } from "formik";
 import { emailValidate, registerFormValidation } from "./helper/validate";
+import { useAuthStore } from "./store/store";
 import CustomButton from "./components/CustomButton";
+import { registerUser } from "./helper/api";
 
 const Page = () => {
+  // useAuthStore((state) => console.log("STORESTATE", state));
   const [isLoading, setIsLoading] = useState(false);
   const { isLoaded, signUp, setActive } = useSignUp();
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -34,6 +37,10 @@ const Page = () => {
   const [code, setCode] = React.useState("");
   const router = useRouter();
   const { signOut } = useAuth();
+
+  const setUserName = useAuthStore((state) => state.setUsername);
+
+  useEffect(() => {});
 
   const onSignOut = () => {
     if (!isLoaded) {
@@ -72,6 +79,17 @@ const Page = () => {
     }
   }
 
+  const register = async (data: any) => {
+    setIsLoading(true);
+    const status = await registerUser(data);
+    console.log("RESPONSEREGISTER", status);
+    if (status === 201) {
+      setIsLoading(false);
+      router.push("/(authenticated)/(tabs)/home");
+    }
+    setIsLoading(false);
+  };
+
   const onPressVerify = async () => {
     if (!isLoaded) {
       return;
@@ -105,16 +123,18 @@ const Page = () => {
       keyboardVerticalOffset={keyboardVerticalOffset}
     >
       <Formik
-        initialValues={{ email: "", userName: "", password: "" }}
+        initialValues={{ email: "", username: "", password: "" }}
         validate={registerFormValidation}
         validateOnChange={false}
         validateOnBlur={false}
         onSubmit={async (values) => {
           values = await Object.assign(values);
-          console.log("VALUES", values);
           setEmailAddress(values.email);
           setPassword(values.password);
-          onSignup();
+          setUserName(values.username);
+          register(values);
+          //  console.log("RESPONSEREGISTER2", registerUser(values));
+          // onSignup();
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -179,9 +199,9 @@ const Page = () => {
                   <TextInput
                     autoCapitalize="none"
                     placeholder="Username"
-                    value={values.userName}
-                    onBlur={handleBlur("userName")}
-                    onChangeText={handleChange("userName")}
+                    value={values.username}
+                    onBlur={handleBlur("username")}
+                    onChangeText={handleChange("username")}
                     style={[styles.input]}
                   />
                 </View>
@@ -231,6 +251,7 @@ const Page = () => {
               isLoading={isLoading}
               title={"Sign Up"}
               onPress={() => handleSubmit()}
+              emailField={values.email}
             />
           </View>
         )}

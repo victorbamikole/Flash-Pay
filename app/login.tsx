@@ -18,6 +18,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
 import { Formik } from "formik";
 import { userNameValidate } from "./helper/validate";
+import { useAuthStore } from "./store/store";
+import CustomButton from "./components/CustomButton";
 
 enum SignInType {
   Phone,
@@ -34,6 +36,8 @@ const Page = () => {
   const keyboardVerticalOffset = Platform.OS === "ios" ? 80 : 0;
   const router = useRouter();
   const { signIn } = useSignIn();
+  const setUserName = useAuthStore((state) => state.setUsername);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSignIn = async (type: SignInType) => {
     if (type === SignInType.Phone) {
@@ -78,9 +82,13 @@ const Page = () => {
       keyboardVerticalOffset={keyboardVerticalOffset}
     >
       <Formik
-        initialValues={{ userName: "", password: "" }}
+        initialValues={{ username: "", password: "" }}
         validate={userNameValidate}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={async (values) => {
+          values = await Object.assign(values);
+          setUserName(values.username);
+          router.push({ pathname: "/password" });
+        }}
         validateOnChange={false}
         validateOnBlur={false}
       >
@@ -97,9 +105,9 @@ const Page = () => {
                 placeholder="Username"
                 placeholderTextColor={Colors.gray}
                 keyboardType="numeric"
-                value={values.userName}
-                onBlur={handleBlur("userName")}
-                onChangeText={handleChange("userName")}
+                value={values.username}
+                onBlur={handleBlur("username")}
+                onChangeText={handleChange("username")}
               />
             </View>
 
@@ -190,7 +198,7 @@ const Page = () => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 defaultStyles.pillButton,
                 values.userName !== "" ? styles.enabled : styles.disabled,
@@ -198,7 +206,16 @@ const Page = () => {
               ]}
             >
               <Text style={defaultStyles.buttonText}>Continue</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <View style={{ paddingVertical: 20 }}>
+              <CustomButton
+                isLoading={isLoading}
+                title={"Log in"}
+                onPress={() => handleSubmit()}
+                emailField={values.username}
+              />
+            </View>
           </View>
         )}
       </Formik>

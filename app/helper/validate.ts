@@ -1,9 +1,10 @@
 /** validate username */
 import { withFormik, FormikProps, FormikErrors, Form, Field } from "formik";
 import { Alert } from "react-native";
+import { authenticate } from "./api";
 
 interface UserNameValues {
-  userName: string;
+  username: string;
 }
 
 interface PasswordValues {
@@ -17,16 +18,24 @@ interface ResetPasswordValues {
 interface EmailValues {
   password: string;
   email: string;
-  userName: string;
+  username: string;
 }
 interface RegisterFormValues {
   password: string;
   email: string;
-  userName: string;
+  username: string;
 }
 
 export const userNameValidate = async (values: UserNameValues) => {
   const errors = verifyUserName(values);
+  if (values.username) {
+    const { status } = await authenticate(values.username);
+    console.log("RESPONSE", status);
+    if (status === 404) {
+      errors.username = "User doesn't exist";
+      Alert.alert("Error", errors.username);
+    }
+  }
   return errors;
 };
 
@@ -46,6 +55,7 @@ export const resetPasswordValidate = async (values: ResetPasswordValues) => {
 
 export const registerFormValidation = async (values: RegisterFormValues) => {
   const errors = verifyUserName(values);
+  // userNameValidate(values);
   passwordValidate(values);
   emailValidate(values);
 
@@ -93,12 +103,12 @@ const verifyEmail = (values: EmailValues) => {
 
 const verifyUserName = (values: UserNameValues) => {
   let errors: FormikErrors<UserNameValues> = {};
-  if (!values.userName) {
-    errors.userName = "Username required";
-    Alert.alert("Error", errors.userName);
-  } else if (values.userName.includes(" ")) {
-    errors.userName = "Invalid UserName";
-    Alert.alert("Error", errors.userName);
+  if (!values.username) {
+    errors.username = "Username required";
+    Alert.alert("Error", errors.username);
+  } else if (values.username.includes(" ")) {
+    errors.username = "Invalid UserName";
+    Alert.alert("Error", errors.username);
   }
 
   return errors;

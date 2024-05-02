@@ -11,10 +11,22 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { defaultStyles } from "@/constants/Styles";
 import RoundBtn from "@/app/components/RoundBtn";
 import DropDown from "@/app/components/Dropdown";
+import { useAuth, useSignUp } from "@clerk/clerk-expo";
 
 const Page = () => {
+    const { isLoaded, signUp, setActive } = useSignUp();
   const balance = 1420;
   const headerHeight = useHeaderHeight();
+  const { signOut } = useAuth();
+
+  const onSignOut = () => {
+    if (!isLoaded) {
+      return null;
+    }
+    const out = signOut();
+    console.log("OUT", out);
+  };
+
   const onAddMoney = () => {
     // runTransaction({
     //   id: Math.random().toString(),
@@ -36,16 +48,13 @@ const Page = () => {
           <Text style={styles.balance}>{balance}</Text>
           <Text style={styles.currency}>€</Text>
         </View>
-      
       </View>
 
       <View style={styles.actionRow}>
-        <RoundBtn icon={"add"} text={"Add money"} onPress={onAddMoney} />
+        <RoundBtn icon={"add"} text={"Add money"} onPress={onSignOut} />
         <RoundBtn icon={"refresh"} text={"Exchange"} onPress={undefined} />
         <RoundBtn icon={"list"} text={"Details"} />
-       
-        <DropDown/>
-        
+        <DropDown />
       </View>
     </ScrollView>
   );

@@ -18,6 +18,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
 import { Formik } from "formik";
 import { passwordValidate, userNameValidate } from "./helper/validate";
+import CustomButton from "./components/CustomButton";
+import { useFetch } from "./hooks/fetch.hook";
+import { useAuthStore } from "./store/store";
 
 enum SignInType {
   Phone,
@@ -30,6 +33,12 @@ const Page = () => {
   const keyboardVerticalOffset = Platform.OS === "ios" ? 80 : 0;
   const router = useRouter();
   const { signIn } = useSignIn();
+
+  const { username } = useAuthStore((state) => state.auth);
+
+  const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);
+
+  console.log("apidata", apiData);
 
   <Formik
     initialValues={{ password: "" }}
@@ -55,7 +64,8 @@ const Page = () => {
           <View style={defaultStyles.container}>
             <Text style={defaultStyles.header}>Welcome Back</Text>
             <Text style={defaultStyles.descriptionText}>
-              Enter your password associated with your account
+              Enter your password associated with your account{" "}
+              {apiData?.username}
             </Text>
 
             <View style={styles.inputContainer}>
@@ -83,7 +93,7 @@ const Page = () => {
               </TouchableOpacity>
             </Link>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 defaultStyles.pillButton,
                 values.password !== "" ? styles.enabled : styles.disabled,
@@ -92,7 +102,16 @@ const Page = () => {
               onPress={() => handleSubmit()}
             >
               <Text style={defaultStyles.buttonText}>Continue</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <View style={{ paddingVertical: 20 }}>
+              <CustomButton
+                isLoading={isLoading}
+                title={"Log in"}
+                onPress={() => handleSubmit()}
+                emailField={values.password}
+              />
+            </View>
           </View>
         )}
       </Formik>
