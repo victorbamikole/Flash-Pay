@@ -19,9 +19,11 @@ import { useSignUp } from "@clerk/clerk-expo";
 import { Formik } from "formik";
 import { resetPasswordValidate } from "../helper/validate";
 import CustomButton from "../components/CustomButton";
+import { resetPassword } from "../helper/api";
+import { useAuthStore } from "../store/store";
 
 const Page = () => {
-    const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const { isLoaded, signUp, setActive } = useSignUp();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [show, setShow] = useState(false);
@@ -33,7 +35,22 @@ const Page = () => {
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
 
+  const { username } = useAuthStore((state) => state.auth);
+
   const router = useRouter();
+
+  const onResetPassword = async (username: any, password: any) => {
+    const { status } = await resetPassword(username, password);
+    console.log("RESPONSERESET", status);
+    if (status === 201) {
+      Alert.alert("Password successfully reset");
+      router.push({
+        pathname: "/login/" as any,
+      });
+    } else {
+      Alert.alert("Error reseting Password");
+    }
+  };
 
   async function onSignup() {
     if (!isLoaded) {
@@ -93,7 +110,7 @@ const Page = () => {
         validate={resetPasswordValidate}
         validateOnChange={false}
         validateOnBlur={false}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={(values) => onResetPassword(username, values.password)}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View style={defaultStyles.container}>
@@ -124,9 +141,7 @@ const Page = () => {
             </View>
 
             <Link href={"/verify/[phone]" as any} replace asChild>
-              <TouchableOpacity>
-                <Text style={defaultStyles.textLink}>Confirm Password</Text>
-              </TouchableOpacity>
+              <TouchableOpacity></TouchableOpacity>
             </Link>
 
             <View style={{ flex: 1 }} />
