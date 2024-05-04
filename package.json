@@ -18,7 +18,7 @@
     "@react-native-menu/menu": "^1.0.1",
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.6.8",
-    "expo": "~50.0.14",
+    "expo": "~50.0.17",
     "expo-asset": "~9.0.2",
     "expo-av": "~13.10.5",
     "expo-blur": "~12.9.2",
@@ -48,7 +48,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-web": "~0.19.6",
     "zeego": "^1.10.0",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "@react-native-async-storage/async-storage": "1.21.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

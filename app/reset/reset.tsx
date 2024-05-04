@@ -18,8 +18,10 @@ import { Link, useRouter } from "expo-router";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Formik } from "formik";
 import { resetPasswordValidate } from "../helper/validate";
+import CustomButton from "../components/CustomButton";
 
 const Page = () => {
+    const [isFetching, setIsFetching] = useState(false);
   const { isLoaded, signUp, setActive } = useSignUp();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [show, setShow] = useState(false);
@@ -121,7 +123,7 @@ const Page = () => {
               />
             </View>
 
-            <Link href={"/verify/[phone]"} replace asChild>
+            <Link href={"/verify/[phone]" as any} replace asChild>
               <TouchableOpacity>
                 <Text style={defaultStyles.textLink}>Confirm Password</Text>
               </TouchableOpacity>
@@ -129,7 +131,7 @@ const Page = () => {
 
             <View style={{ flex: 1 }} />
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 defaultStyles.pillButton,
                 phoneNumber !== "" ? styles.enabled : styles.disabled,
@@ -138,7 +140,15 @@ const Page = () => {
               onPress={() => handleSubmit()}
             >
               <Text style={defaultStyles.buttonText}>Sign up</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <View style={{ paddingVertical: 20 }}>
+              <CustomButton
+                isLoading={isFetching}
+                title={"Reset"}
+                onPress={() => handleSubmit()}
+                emailField={values.password}
+              />
+            </View>
           </View>
         )}
       </Formik>

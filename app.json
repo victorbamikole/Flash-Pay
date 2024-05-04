@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FlashPay",
-    "slug": "FlashPay",
+    "slug": "flashpay",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -37,6 +37,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8789e4cf-f4a3-40ed-8d49-20a097005cf6"
+      }
+    },
+    "owner": "devick007"
   }
 }

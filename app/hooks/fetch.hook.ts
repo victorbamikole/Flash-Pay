@@ -28,7 +28,10 @@ export const useFetch = (query: Query): [FetchData, SetFetchData] => {
       if (!query) return;
       try {
         setData((prev) => ({ ...prev, isLoading: true }));
-        const { data, status } = await axios.get(`/api/${query}`);
+        const username = !query ? await getUserName() : "";
+        const { data, status } = !query
+          ? await axios.get(`/api/user/${username}`)
+          : await axios.get(`/api/${query}`);
 
         if (status === 200) {
           setData((prev) => ({

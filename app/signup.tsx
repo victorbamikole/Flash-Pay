@@ -85,7 +85,9 @@ const Page = () => {
     console.log("RESPONSEREGISTER", status);
     if (status === 201) {
       setIsLoading(false);
-      router.push("/(authenticated)/(tabs)/home");
+      router.push("/login");
+    } else {
+      setIsLoading(false);
     }
     setIsLoading(false);
   };
@@ -141,8 +143,7 @@ const Page = () => {
           <View style={defaultStyles.container}>
             <Text style={defaultStyles.header}>Let's get started</Text>
             <Text style={defaultStyles.descriptionText}>
-              Enter your phone number. We will send you a confirmation code
-              there
+              Enter your details to get started
             </Text>
             <View style={styles.inputContainer}>
               {/* <TouchableOpacity

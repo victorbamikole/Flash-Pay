@@ -104,7 +104,6 @@ const Page = () => {
                 style={[styles.input, { flex: 1 }]}
                 placeholder="Username"
                 placeholderTextColor={Colors.gray}
-                keyboardType="numeric"
                 value={values.username}
                 onBlur={handleBlur("username")}
                 onChangeText={handleChange("username")}
@@ -112,7 +111,7 @@ const Page = () => {
             </View>
 
             <Link
-              href={"/password"}
+              href={"/signup"}
               replace
               asChild
               style={{ paddingBottom: 30 }}

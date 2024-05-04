@@ -2,14 +2,16 @@
 
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_DOMAIN;
 
 /** To get username from Token */
-export const getUserName = () => {
-  const token = localStorage.getItem("token");
+export const getUserName = async () => {
+  const token = await AsyncStorage.getItem("token");
   if (!token) return Promise.reject("Cannot find Token");
   let decode = jwtDecode(token);
+  console.log("DECODETOKEN", decode);
   return decode;
 };
 
@@ -91,19 +93,22 @@ export async function generateOTP(username: any) {
       data: { code },
       status,
     } = await axios.get("/api/generateOTP", { params: { username } });
+    console.log("APIOTP", code);
 
     // send mail with the OTP
     if (status === 201) {
       const {
         data: { email },
-      } = await getUser({ username });
+      } = await getUser(username);
       const text = `Your Password Recovery OTP is ${code}. Verify and recover your password.`;
+      console.log("emailotp", email);
       await axios.post("/api/registerMail", {
         username,
         userEmail: email,
         text,
         subject: "Password Recovery OTP",
       });
+      console.log("DONE", code);
     }
 
     return code;
@@ -118,9 +123,10 @@ export async function verifyOTP(username: any, code: any) {
     const { data, status } = await axios.get("/api/verifyOTP", {
       params: { username, code },
     });
+    console.log("APISTATUS", status);
     return { data, status };
   } catch (error) {
-    throw error;
+    return error;
   }
 }
 

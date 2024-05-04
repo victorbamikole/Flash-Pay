@@ -12,12 +12,15 @@ import { defaultStyles } from "@/constants/Styles";
 import RoundBtn from "@/app/components/RoundBtn";
 import DropDown from "@/app/components/Dropdown";
 import { useAuth, useSignUp } from "@clerk/clerk-expo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, Stack, router, useRouter, useSegments } from "expo-router";
 
 const Page = () => {
-    const { isLoaded, signUp, setActive } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
   const balance = 1420;
   const headerHeight = useHeaderHeight();
   const { signOut } = useAuth();
+    const router = useRouter();
 
   const onSignOut = () => {
     if (!isLoaded) {
@@ -25,6 +28,15 @@ const Page = () => {
     }
     const out = signOut();
     console.log("OUT", out);
+  };
+
+  const logOut = async () => {
+    try {
+      await AsyncStorage.setItem("token", "");
+       router.replace("/");
+    } catch (e) {
+      // saving error
+    }
   };
 
   const onAddMoney = () => {
@@ -51,7 +63,7 @@ const Page = () => {
       </View>
 
       <View style={styles.actionRow}>
-        <RoundBtn icon={"add"} text={"Add money"} onPress={onSignOut} />
+        <RoundBtn icon={"add"} text={"Add money"} onPress={logOut} />
         <RoundBtn icon={"refresh"} text={"Exchange"} onPress={undefined} />
         <RoundBtn icon={"list"} text={"Details"} />
         <DropDown />

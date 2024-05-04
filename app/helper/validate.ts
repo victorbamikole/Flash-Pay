@@ -20,7 +20,7 @@ interface EmailValues {
   email: string;
   username: string;
 }
-interface RegisterFormValues {
+type RegisterFormValues = {
   password: string;
   email: string;
   username: string;

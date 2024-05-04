@@ -14,14 +14,28 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import { useAuthStore } from "../store/store";
+import { generateOTP, verifyOTP } from "../helper/api";
+import { useRouter } from "expo-router";
+
 const CELL_COUNT = 6;
 
+type VerifyOTPResponse = {
+  status: any;
+  // Other properties
+};
+
 const Page = () => {
+  const router = useRouter();
+  const { auth } = useAuthStore();
+  const { username } = auth;
+  console.log("USERNAME", username);
   const { email, signin } = useLocalSearchParams<{
     email: string;
     signin: string;
   }>();
   const [code, setCode] = useState("");
+  const [enableButton, setEnableButton] = useState(false);
   const { signIn } = useSignIn();
   const { isLoaded, signUp, setActive } = useSignUp();
   const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
@@ -32,13 +46,49 @@ const Page = () => {
 
   useEffect(() => {
     if (code.length === 6) {
-      if (signin === "true") {
-        verifySignIn();
-      } else {
-        onPressVerify();
-      }
+      verifyOtpCode();
+      // if (signin === "true") {
+      //   verifySignIn();
+      // } else {
+      //   onPressVerify();
+      // }
     }
   }, [code]);
+
+  useEffect(() => {
+    generateOTP(username).then((otp) => {
+      if (otp) {
+        console.log("EMAILOTP", otp);
+        Alert.alert("Success", "OTP has been sent to your email ");
+      } else {
+        Alert.alert("Error", "Error generarting OTP");
+      }
+    });
+  }, [username]);
+
+  const verifyOtpCode = async () => {
+    const response = await verifyOTP(username, code);
+    const { status } = response as { status: number };
+    console.log("STATUS2", status);
+    if (status === 201) {
+      setEnableButton(true);
+      Alert.alert("Success", "OTP successfully verified ");
+    } else {
+      return Alert.alert("Error", "Error verifying OTP");
+    }
+  };
+
+  const resendOtp = async () => {
+    try {
+      const OTP = await generateOTP(username);
+      console.log("OTP:", OTP);
+      console.log("OTP has been sent to your email!");
+      Alert.alert("OTP has been sent to your email!");
+    } catch (error) {
+      console.error("Could not send OTP:", error);
+      Alert.alert("Error", "Could not send OTP:");
+    }
+  };
 
   const verifyCode = async () => {
     try {
@@ -54,10 +104,15 @@ const Page = () => {
     }
   };
 
+  const navigate = () => {
+    router.push({ pathname: "reset/reset" } as any);
+  };
+
   const onPressVerify = async () => {
     if (!isLoaded) {
       return;
     }
+
     // setLoading(true);
 
     try {
@@ -91,7 +146,7 @@ const Page = () => {
     <View style={defaultStyles.container}>
       <Text style={defaultStyles.header}>6-digit code</Text>
       <Text style={defaultStyles.descriptionText}>
-        Enter the 6 digit Code sent to {email}
+        Enter the 6 digit Code sent to your email address
       </Text>
 
       <CodeField
@@ -122,21 +177,17 @@ const Page = () => {
         )}
       />
 
-      <Link href={"/login"} replace asChild>
-        <TouchableOpacity>
-          <Text style={[defaultStyles.textLink]}>
-            Already have an account? Log in
-          </Text>
-        </TouchableOpacity>
-      </Link>
+      <TouchableOpacity onPress={resendOtp}>
+        <Text style={[defaultStyles.textLink]}>Resend OTP</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={[
           defaultStyles.pillButton,
-          code !== "" ? styles.enabled : styles.disabled,
+          enableButton ? styles.enabled : styles.disabled,
           { marginBottom: 20, marginTop: 20 },
         ]}
-        onPress={onPressVerify}
+        onPress={navigate}
       >
         <Text style={defaultStyles.buttonText}>Continue</Text>
       </TouchableOpacity>

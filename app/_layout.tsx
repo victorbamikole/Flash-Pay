@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 const PUBLIC_CLERK_PUBLISHABLE_KEY =
   process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Cache the Clerk JWT
 const tokenCache = {
@@ -67,13 +68,30 @@ const InitialLayout = () => {
   useEffect(() => {
     console.log("isSignedIn", isSignedIn);
 
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem("token");
+
+        if (value !== null) {
+          console.log("LOGINTOKEN", value);
+          router.replace("/(authenticated)/(tabs)/home");
+          // value previously stored
+        } else {
+          router.replace("/");
+        }
+      } catch (e) {
+        // error reading value
+      }
+    };
+
     const inAuthGroup = segments[0] === "(authenticated)";
 
-    if (isSignedIn && !inAuthGroup) {
-      router.replace("/(authenticated)/(tabs)/home");
-    } else if (!isSignedIn!) {
-      router.replace("/");
-    }
+    // if (isSignedIn && !inAuthGroup) {
+    //   router.replace("/(authenticated)/(tabs)/home");
+    // } else if (!isSignedIn!) {
+    //   router.replace("/");
+    // }
+    getData();
   }, [isSignedIn]);
 
   if (!loaded || !isLoaded) {
